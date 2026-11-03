@@ -143,7 +143,7 @@
       },
       "facebook": {
         "name": "Facebook",
-        "description": "Page"
+        "description": "Page + Instagram lié"
       },
       "sms": {
         "name": "SMS",
@@ -1661,7 +1661,8 @@
       "success": {
         "channelCreated": "Canal créé avec succès"
       }
-    }
+    },
+    "instagramLinked": "Instagram lié"
   },
   "deleteDialog": {
     "title": "Supprimer le Canal",

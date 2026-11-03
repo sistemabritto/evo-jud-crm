@@ -56,6 +56,8 @@ export interface Inbox {
   lock_to_single_conversation?: boolean;
   // Auth/status
   reauthorization_required?: boolean;
+  // Instagram profissional vinculado à página (caixa do Facebook)
+  instagram_id?: string | null;
   // EVO-1680 — true when an AgentBot is connected and its AgentBotInbox.status
   // is :active. Gates the "Devolver ao bot" UI control in ConversationActionsDropdown.
   agent_bot_active?: boolean;

@@ -271,7 +271,10 @@ export const useChannelForm = () => {
     hasEvolutionGoConfig: config.hasEvolutionGoConfig === true,
     canFB: config.hasFacebookConfig === true || config.evolutionHubEnabled === true,
     canWpCloud: config.hasWhatsappConfig === true || config.evolutionHubEnabled === true,
-    canIG: config.hasInstagramConfig === true || config.evolutionHubEnabled === true,
+    canIG:
+      config.hasInstagramConfig === true ||
+      config.hasFacebookConfig === true ||
+      config.evolutionHubEnabled === true,
     canTwitter: config.hasTwitterConfig === true,
     canEmailGoogle: typeof config.googleOAuthClientId === 'string' && config.googleOAuthClientId.length > 0,
     canEmailMicrosoft: typeof config.azureAppId === 'string' && config.azureAppId.length > 0,

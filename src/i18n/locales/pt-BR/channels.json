@@ -145,7 +145,7 @@
       },
       "facebook": {
         "name": "Facebook",
-        "description": "Página"
+        "description": "Página + Instagram vinculado"
       },
       "sms": {
         "name": "SMS",
@@ -1721,7 +1721,8 @@
         "rejectError": "Erro ao rejeitar moderação",
         "regenerateError": "Erro ao regenerar resposta"
       }
-    }
+    },
+    "instagramLinked": "Instagram vinculado"
   },
   "deleteDialog": {
     "title": "Excluir Canal",

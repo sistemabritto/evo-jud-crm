@@ -62,5 +62,15 @@
     "errorUnknown": "Erro desconhecido ao processar conexão",
     "closeMessage": "Você pode fechar esta página e tentar novamente.",
     "footer": "Aguarde enquanto processamos sua autorização do Instagram."
+  },
+  "unified": {
+    "title": "Instagram conectado pela página do Facebook",
+    "description": "Neste app da Meta (login unificado), o Instagram profissional vinculado à sua página do Facebook entra na mesma caixa da página. As mensagens diretas do Instagram chegam junto com as do Messenger, sem uma caixa separada.",
+    "connectButton": "Conectar Facebook + Instagram",
+    "existingTitle": "Caixas de página já conectadas",
+    "linked": "Instagram vinculado",
+    "notLinked": "Sem Instagram vinculado à página",
+    "none": "Nenhuma página conectada ainda.",
+    "hint": "Para o Instagram aparecer, ele precisa ser conta profissional vinculada à página, e no app do Instagram a opção \"Permitir acesso às mensagens\" deve estar ativa."
   }
 }

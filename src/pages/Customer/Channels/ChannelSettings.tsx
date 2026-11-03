@@ -23,6 +23,7 @@ import {
   Bot,
   Shield,
   Mail,
+  Instagram,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -629,6 +630,12 @@ export default function ChannelSettings({ inboxId: inboxIdProp, onExit }: Channe
             />
           )}
           <h1 className="text-xl font-semibold text-foreground truncate">{inboxName}</h1>
+          {inboxHook.isAFacebookInbox && inbox?.instagram_id && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-pink-200 bg-pink-50 px-2 py-0.5 text-xs font-medium text-pink-700 dark:border-pink-900 dark:bg-pink-950/30 dark:text-pink-300">
+              <Instagram className="h-3.5 w-3.5" />
+              {t('settings.instagramLinked')}
+            </span>
+          )}
         </div>
       </div>
 

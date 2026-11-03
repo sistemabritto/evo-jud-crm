@@ -315,7 +315,15 @@ export default function NewChannel({ initialChannelId, onExit }: NewChannelProps
         );
 
       case 'instagram':
-        return <InstagramForm onCancel={handleGoBack} />;
+        return (
+          <InstagramForm
+            onCancel={handleGoBack}
+            onUseFacebook={() => {
+              const facebook = channelTypes.find(c => c.type === 'facebook');
+              if (facebook) handleChannelSelect(facebook);
+            }}
+          />
+        );
 
       case 'email':
         if (!selectedProvider) {

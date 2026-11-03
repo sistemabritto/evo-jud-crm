@@ -62,5 +62,15 @@
     "errorUnknown": "Errore sconosciuto durante l'elaborazione della connessione",
     "closeMessage": "Puoi chiudere questa pagina e riprovare.",
     "footer": "Attendi mentre elaboriamo la tua autorizzazione Instagram."
+  },
+  "unified": {
+    "title": "Instagram connected through your Facebook Page",
+    "description": "With this Meta app (unified login), the professional Instagram account linked to your Facebook Page joins the Page inbox. Instagram Direct messages arrive alongside Messenger, with no separate inbox.",
+    "connectButton": "Connect Facebook + Instagram",
+    "existingTitle": "Page inboxes already connected",
+    "linked": "Instagram linked",
+    "notLinked": "No Instagram linked to this Page",
+    "none": "No Page connected yet.",
+    "hint": "For Instagram to show up it must be a professional account linked to the Page, and \"Allow access to messages\" must be on in the Instagram app."
   }
 }
