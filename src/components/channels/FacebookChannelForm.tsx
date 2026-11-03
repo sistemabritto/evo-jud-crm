@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import HubConnectButton from '@/components/inbox/HubConnectButton';
 import { FormActionBar } from '@/components/channels/shared/FormActionBar';
+import { FACEBOOK_PAGE_SCOPES } from './facebookScopes';
 
 // Facebook SDK types
 declare global {
@@ -211,8 +212,7 @@ export default function FacebookChannelForm({ onSuccess, onCancel }: FacebookCha
         }
       },
       {
-        scope:
-          'pages_manage_metadata,business_management,pages_messaging,pages_show_list,pages_read_engagement,pages_manage_posts,pages_read_user_content,pages_manage_engagement',
+        scope: FACEBOOK_PAGE_SCOPES,
       },
     );
   };
@@ -224,10 +224,12 @@ export default function FacebookChannelForm({ onSuccess, onCancel }: FacebookCha
     try {
       const fbPages = await ChannelsService.fetchFacebookPages(accessToken);
 
-      const pageDetails = fbPages?.data?.page_details || [];
+      // extractData já desembrulha { data: ... }; aceita também a resposta ainda embrulhada.
+      const payload = fbPages?.page_details ? fbPages : fbPages?.data;
+      const pageDetails = payload?.page_details || [];
       const availablePages = pageDetails.filter((p: any) => !p.exists);
 
-      setUserAccessToken(fbPages?.data?.user_access_token || accessToken);
+      setUserAccessToken(payload?.user_access_token || accessToken);
       setPages(availablePages);
       setIsLoading(false);
 

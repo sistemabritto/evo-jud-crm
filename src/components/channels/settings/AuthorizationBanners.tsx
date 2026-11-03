@@ -17,6 +17,7 @@ import WhatsappService from '@/services/channels/whatsappService';
 import InboxesService from '@/services/channels/inboxesService';
 import instagramService from '@/services/channels/instagramService';
 import EmailOauthService from '@/services/channels/emailOauthService';
+import { FACEBOOK_PAGE_SCOPES } from '../facebookScopes';
 
 interface AuthorizationBannersProps {
   inbox: any;
@@ -387,8 +388,7 @@ const AuthorizationSuccessBanner: React.FC<{
           });
         },
         {
-          scope:
-            'pages_manage_metadata,business_management,pages_messaging,pages_show_list,pages_read_engagement,pages_manage_posts,pages_read_user_content,pages_manage_engagement',
+          scope: FACEBOOK_PAGE_SCOPES,
         },
       );
     } catch (error: any) {
@@ -716,7 +716,7 @@ const AuthorizationBanners: React.FC<AuthorizationBannersProps> = ({ inbox, onRe
           process.env.REACT_APP_FB_APP_ID
         }&redirect_uri=${encodeURIComponent(
           redirectUrl,
-        )}&scope=pages_manage_metadata,business_management,pages_messaging,pages_show_list,pages_read_engagement,pages_manage_posts,pages_read_user_content,pages_manage_engagement`;
+        )}&scope=${FACEBOOK_PAGE_SCOPES}`;
         break;
       case 'google':
         redirectUrl = `${baseUrl}/api/v1/callbacks/google`;
