@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  IMAGE_NAME: excarplex/evo-ai-frontend-community
+  IMAGE_NAME: excarplex/evo-jud-crm
 
 jobs:
   build:

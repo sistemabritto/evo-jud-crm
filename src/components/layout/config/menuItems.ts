@@ -117,13 +117,7 @@ export const getCustomerMenuItems = (t: (key: string) => string): MenuItem[] => 
     resource: 'pipelines',
     action: 'read',
   },
-  {
-    name: t('menu.customer.products'),
-    href: '/products',
-    icon: Package,
-    resource: 'products',
-    action: 'read',
-  },
+  // evo-jud-crm: "Produtos" fora do menu (escritório não vende produtos; a rota /products continua existindo).
   {
     name: t('menu.customer.automation'),
     href: '/automation',
