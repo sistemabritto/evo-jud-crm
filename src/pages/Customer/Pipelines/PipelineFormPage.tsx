@@ -90,7 +90,7 @@ export default function PipelineFormPage() {
     name: '',
     description: '',
     pipeline_type: 'custom',
-    visibility: 'private',
+    visibility: 'public', // Cramer: escritório pequeno (2 usuários), pipeline novo nasce público
     is_active: true,
     stages: [],
   });
