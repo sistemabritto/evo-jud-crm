@@ -5,6 +5,8 @@ import { integrationsService } from '@/services/integrations';
 import { DashboardApp } from '@/types/integrations';
 import { Skeleton } from '@evoapi/design-system';
 import { AlertCircle } from 'lucide-react';
+import DashboardAppFrame from '@/components/chat/dashboard-app/DashboardAppFrame';
+import { bridgeOriginFor } from '@/utils/dashboardAppBridge';
 
 /**
  * Generic page component for displaying embedded dashboard apps
@@ -143,13 +145,24 @@ export default function DashboardAppPage() {
     <div className="flex flex-col h-full">
       {/* Iframe Content */}
       <div className="flex-1 relative overflow-hidden">
-        <iframe
-          src={appUrl}
-          title={app.title}
-          className="absolute inset-0 w-full h-full border-0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
-        />
+        {bridgeOriginFor(appUrl) ? (
+          <DashboardAppFrame
+            url={appUrl}
+            title={app.title}
+            mode="sidebar"
+            conversation={null}
+            contact={null}
+            className="absolute inset-0 w-full h-full border-0"
+          />
+        ) : (
+          <iframe
+            src={appUrl}
+            title={app.title}
+            className="absolute inset-0 w-full h-full border-0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+          />
+        )}
       </div>
     </div>
   );

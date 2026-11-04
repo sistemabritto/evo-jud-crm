@@ -6,6 +6,9 @@ import {
   parseBridgeOrigins,
   safeFilename,
   validateAttach,
+  validSearchTerm,
+  validRequestId,
+  contactSummary,
 } from './dashboardAppBridge';
 
 const b64 = (s: string) => btoa(s);
@@ -52,10 +55,22 @@ describe('dashboardAppBridge', () => {
       { id: 'u1', name: 'Ana', email: 'a@x.com', access_token: 'x' } as never,
     );
     expect(ctx).toEqual({
+      mode: 'conversation',
       conversation: { id: 'c1', display_id: 7, inbox_id: 'i1', status: 'open' },
       contact: { id: 'k1', name: 'Fulano', email: 'f@x.com', phone_number: '+5571', custom_attributes: { cpf_cnpj: '1' } },
       currentAgent: { id: 'u1', name: 'Ana', email: 'a@x.com' },
     });
-    expect(buildAppContext(null, null, null)).toEqual({ conversation: null, contact: null, currentAgent: null });
+    expect(buildAppContext(null, null, null, 'sidebar')).toEqual({ mode: 'sidebar', conversation: null, contact: null, currentAgent: null });
+  });
+
+  it('busca: termo, requestId e resumo do contato', () => {
+    expect(validSearchTerm(' jo ')).toBe('jo');
+    expect(validSearchTerm('j')).toBeNull();
+    expect(validSearchTerm('x'.repeat(81))).toBeNull();
+    expect(validSearchTerm(5)).toBeNull();
+    expect(validRequestId('abc123')).toBe('abc123');
+    expect(validRequestId('a b')).toBeNull();
+    expect(contactSummary({ id: 1, name: 'Zé', phone_number: '+55', custom_attributes: { nome_completo: 'José', cpf_cnpj: '1', rg_ie: 'x' } }))
+      .toEqual({ id: '1', name: 'José', phone_number: '+55', email: null, doc: '1' });
   });
 });

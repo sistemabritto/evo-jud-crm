@@ -6,14 +6,24 @@ import {
   ATTACH_EVENT,
   ATTACH_RESULT,
   FETCH_INFO,
+  GET_CONTACT_EVENT,
+  GET_CONTACT_RESULT,
+  SEARCH_EVENT,
+  SEARCH_RESULT,
   bridgeOriginFor,
   buildAppContext,
+  contactSummary,
+  validRequestId,
+  validSearchTerm,
   validateAttach,
 } from '@/utils/dashboardAppBridge';
 
 type Props = {
   url: string;
   title: string;
+  /** 'sidebar': página própria do app, sem conversa; o app escolhe o cliente pela busca. */
+  mode?: 'conversation' | 'sidebar';
+  className?: string;
   conversation: { id?: string; display_id?: string | number | null; inbox_id?: string | null; status?: string | null } | null;
   contact: { id?: string; name?: string | null; email?: string | null; phone_number?: string | null; custom_attributes?: Record<string, unknown> | null } | null;
 };
@@ -22,7 +32,7 @@ type Props = {
 const handled = new Map<string, { at: number; result: Record<string, unknown> }>();
 
 /** Iframe de Dashboard App com a ponte Cramer (contexto + anexar nota privada). */
-export default function DashboardAppFrame({ url, title, conversation, contact }: Props) {
+export default function DashboardAppFrame({ url, title, conversation, contact, mode = 'conversation', className }: Props) {
   const ref = useRef<HTMLIFrameElement>(null);
   const { user } = useAuth();
   const origin = useMemo(() => bridgeOriginFor(url), [url]);
@@ -41,9 +51,9 @@ export default function DashboardAppFrame({ url, title, conversation, contact }:
   const agent = user ? { id: String((user as { id?: unknown }).id ?? ''), name: (user as { name?: string | null }).name, email: (user as { email?: string | null }).email } : null;
   const effectiveContact = fullContact && fullContact.id === contact?.id ? fullContact : contact;
   const context = useMemo(
-    () => buildAppContext(conversation, effectiveContact, agent),
+    () => buildAppContext(conversation, effectiveContact, agent, mode),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [conversation?.id, conversation?.status, effectiveContact, agent?.id],
+    [conversation?.id, conversation?.status, effectiveContact, agent?.id, mode],
   );
 
   const post = useCallback(
@@ -64,8 +74,33 @@ export default function DashboardAppFrame({ url, title, conversation, contact }:
     const onMessage = async (event: MessageEvent) => {
       if (event.origin !== origin || event.source !== ref.current?.contentWindow) return;
       if (event.data === FETCH_INFO) return sendContext();
-      const data = event.data as { event?: string } | null;
-      if (!data || typeof data !== 'object' || data.event !== ATTACH_EVENT) return;
+      const data = event.data as { event?: string; requestId?: unknown; q?: unknown; id?: unknown } | null;
+      if (!data || typeof data !== 'object') return;
+      if (data.event === SEARCH_EVENT) {
+        const requestId = validRequestId(data.requestId);
+        const q = validSearchTerm(data.q);
+        if (!requestId) return;
+        if (!q) return post({ event: SEARCH_RESULT, requestId, ok: false, error: 'digite ao menos 2 letras' });
+        try {
+          const res = await contactsService.searchContacts({ q, per_page: 20 });
+          const items = (Array.isArray(res?.data) ? res.data : []).slice(0, 20).map(c => contactSummary(c as never));
+          return post({ event: SEARCH_RESULT, requestId, ok: true, items });
+        } catch {
+          return post({ event: SEARCH_RESULT, requestId, ok: false, error: 'falha na busca' });
+        }
+      }
+      if (data.event === GET_CONTACT_EVENT) {
+        const requestId = validRequestId(data.requestId);
+        const id = typeof data.id === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(data.id) ? data.id : null;
+        if (!requestId || !id) return;
+        try {
+          const c = await contactsService.getContact(id, false);
+          return post({ event: GET_CONTACT_RESULT, requestId, ok: true, contact: buildAppContext(null, c as never, null).contact });
+        } catch {
+          return post({ event: GET_CONTACT_RESULT, requestId, ok: false, error: 'contato não encontrado' });
+        }
+      }
+      if (data.event !== ATTACH_EVENT) return;
 
       const parsed = validateAttach(data);
       if ('error' in parsed) return post({ event: ATTACH_RESULT, requestId: parsed.requestId, ok: false, error: parsed.error });
@@ -98,7 +133,7 @@ export default function DashboardAppFrame({ url, title, conversation, contact }:
     <iframe
       ref={ref}
       src={url}
-      className="w-full h-full border-0"
+      className={className ?? 'w-full h-full border-0'}
       title={title}
       onLoad={sendContext}
       sandbox={`allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox${origin ? ' allow-downloads allow-modals' : ''}`}

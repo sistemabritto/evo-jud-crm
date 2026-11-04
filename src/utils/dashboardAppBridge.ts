@@ -8,6 +8,34 @@
 export const FETCH_INFO = 'chatwoot-dashboard-app:fetch-info';
 export const ATTACH_EVENT = 'cramer:attach-file';
 export const ATTACH_RESULT = 'cramer:attach-file:result';
+// Modo barra lateral (sem conversa aberta): o app busca e escolhe o cliente pela ponte.
+export const SEARCH_EVENT = 'cramer:search-contacts';
+export const SEARCH_RESULT = 'cramer:search-contacts:result';
+export const GET_CONTACT_EVENT = 'cramer:get-contact';
+export const GET_CONTACT_RESULT = 'cramer:get-contact:result';
+
+export function validRequestId(v: unknown): string | null {
+  return typeof v === 'string' && /^[A-Za-z0-9_-]{6,64}$/.test(v) ? v : null;
+}
+
+/** Termo de busca aceito (2 a 80 caracteres, sem quebra de linha). */
+export function validSearchTerm(v: unknown): string | null {
+  if (typeof v !== 'string') return null;
+  const q = v.replace(/\s+/g, ' ').trim();
+  return q.length >= 2 && q.length <= 80 ? q : null;
+}
+
+/** Resumo de contato para a lista de busca (sem custom_attributes completos). */
+export function contactSummary(c: { id?: unknown; name?: unknown; phone_number?: unknown; email?: unknown; custom_attributes?: Record<string, unknown> | null }) {
+  const a = c.custom_attributes ?? {};
+  return {
+    id: String(c.id ?? ''),
+    name: String(a.nome_completo || c.name || ''),
+    phone_number: c.phone_number ? String(c.phone_number) : null,
+    email: c.email ? String(c.email) : null,
+    doc: a.cpf_cnpj ? String(a.cpf_cnpj) : a.doc ? String(a.doc) : null,
+  };
+}
 export const ATTACH_MIMES = [
   'application/rtf',
   'text/rtf',
@@ -87,8 +115,9 @@ type ContactLike = { id?: string; name?: string | null; email?: string | null; p
 type AgentLike = { id?: string; name?: string | null; email?: string | null };
 
 /** Só os campos que o app precisa (nada de tokens, notas ou histórico). */
-export function buildAppContext(conversation: Maybe<ConversationLike>, contact: Maybe<ContactLike>, agent: Maybe<AgentLike>) {
+export function buildAppContext(conversation: Maybe<ConversationLike>, contact: Maybe<ContactLike>, agent: Maybe<AgentLike>, mode: 'conversation' | 'sidebar' = 'conversation') {
   return {
+    mode,
     conversation: conversation
       ? { id: conversation.id, display_id: conversation.display_id, inbox_id: conversation.inbox_id, status: conversation.status }
       : null,
