@@ -21,6 +21,8 @@ for file in $(find "$HTML_DIR" -name '*.js' -type f); do
   [ -n "$VITE_EVOAI_API_URL" ] && sed -i "s|VITE_EVOAI_API_URL_PLACEHOLDER|${VITE_EVOAI_API_URL}|g" "$file"
   [ -n "$VITE_AGENT_PROCESSOR_URL" ] && sed -i "s|VITE_AGENT_PROCESSOR_URL_PLACEHOLDER|${VITE_AGENT_PROCESSOR_URL}|g" "$file"
   [ -n "$VITE_EVOFLOW_API_URL" ] && sed -i "s|VITE_EVOFLOW_API_URL_PLACEHOLDER|${VITE_EVOFLOW_API_URL}|g" "$file"
+  # Fork Cramer: origens de Dashboard Apps com a ponte (contexto + anexar nota privada).
+  sed -i "s|VITE_DASHBOARD_APP_BRIDGE_ORIGINS_PLACEHOLDER|${VITE_DASHBOARD_APP_BRIDGE_ORIGINS:-}|g" "$file"
 done
 
 # Configure nginx CSP based on environment (default: development)
@@ -60,5 +62,16 @@ case "$VITE_API_URL" in
     ;;
 esac
 
+# Fork Cramer: libera no frame-src só as origens dos Dashboard Apps com ponte.
+# Aceita apenas https://host[:porta]; idempotente (não duplica em restart).
+for origin in $(printf '%s' "${VITE_DASHBOARD_APP_BRIDGE_ORIGINS:-}" | tr ',' ' '); do
+  case "$origin" in
+    https://*) ;;
+    *) continue ;;
+  esac
+  if printf '%s' "$origin" | grep -Eq '^https://[A-Za-z0-9.-]+(:[0-9]+)?/?$' && ! grep -q "frame-src[^;]* ${origin%/}" "$NGINX_CONF"; then
+    sed -i "s|frame-src 'self'|frame-src 'self' ${origin%/}|" "$NGINX_CONF"
+  fi
+done
 
 exec "$@"

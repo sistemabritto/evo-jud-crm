@@ -37,6 +37,7 @@ import ChatSidebar from '@/components/chat/chat-sidebar/ChatSidebar';
 import ChatHeader from '@/components/chat/chat-header/ChatHeader';
 import ChatArea from '@/components/chat/chat-area/ChatArea';
 import ChatTabs from '@/components/chat/chat-tabs/ChatTabs';
+import DashboardAppFrame from '@/components/chat/dashboard-app/DashboardAppFrame';
 
 import { AlertTriangle, Trash2 } from 'lucide-react';
 
@@ -999,11 +1000,11 @@ const Chat = () => {
                       );
                     }
                     return (
-                      <iframe
-                        src={appUrl}
-                        className="w-full h-full border-0"
+                      <DashboardAppFrame
+                        url={appUrl}
                         title={activeApp.title}
-                        sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+                        conversation={selectedConversation ?? null}
+                        contact={selectedConversation?.contact ?? null}
                       />
                     );
                   })()}
