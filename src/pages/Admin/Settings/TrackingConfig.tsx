@@ -237,7 +237,7 @@ export default function TrackingConfig() {
                   checked={String(values.TRACKING_META_CAPI_ENABLED) === 'true'}
                   onCheckedChange={(v: boolean) => set('TRACKING_META_CAPI_ENABLED', v ? 'true' : 'false')}
                 />
-                <span className="text-sm">Enviar conversões ao Meta (CAPI): conversa, agendamento, contrato e pagamento (só contatos vindos do Meta, do site ou do Instagram)</span>
+                <span className="text-sm">Enviar conversões ao Meta (CAPI): conversa, agendamento, contrato e pagamento (só contatos vindos do Meta, do site, do Instagram, do Postiz ou do OpenReply)</span>
               </div>
             )}
             {sec.title === 'Google Ads' && (
