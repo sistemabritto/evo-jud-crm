@@ -42,6 +42,7 @@ const SECTIONS: { title: string; description: string; fields: Field[] }[] = [
     fields: [
       { key: 'TRACKING_GOOGLE_ADS_CUSTOMER_ID', label: 'ID da conta (cliente)', placeholder: '858-570-9801' },
       { key: 'TRACKING_GOOGLE_ADS_INGEST_SECRET', label: 'Chave do script', secret: true, help: 'Gere uma chave e cole a mesma no script abaixo.' },
+      { key: 'TRACKING_GOOGLE_CONVERSIONS_FEED_SECRET', label: 'Senha da planilha de conversões', secret: true, help: 'Google Ads › Metas › Uploads › Programações: fonte HTTPS, usuário google e esta senha.' },
     ],
   },
   {
@@ -171,11 +172,13 @@ export default function TrackingConfig() {
     }
   };
 
-  const genSecret = () => {
+  const genSecret = (key: string) => {
     const bytes = new Uint8Array(24);
     crypto.getRandomValues(bytes);
-    set('TRACKING_GOOGLE_ADS_INGEST_SECRET', Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join(''));
+    set(key, Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join(''));
   };
+  const SECRET_KEYS = ['TRACKING_GOOGLE_ADS_INGEST_SECRET', 'TRACKING_GOOGLE_CONVERSIONS_FEED_SECRET'];
+  const feedUrl = `${import.meta.env.VITE_API_URL}/api/v1/webhooks/tracking/google_conversions`;
 
   const endpoint = `${import.meta.env.VITE_API_URL}/api/v1/webhooks/tracking/google_ads`;
   const secretForScript = isMasked(values.TRACKING_GOOGLE_ADS_INGEST_SECRET) ? '' : String(values.TRACKING_GOOGLE_ADS_INGEST_SECRET || '');
@@ -228,11 +231,14 @@ export default function TrackingConfig() {
                     value={String(values[f.key] ?? '')}
                     onChange={(e) => set(f.key, e.target.value)}
                   />
-                  {f.key === 'TRACKING_GOOGLE_ADS_INGEST_SECRET' && (
-                    <Button type="button" variant="outline" onClick={genSecret} title="Gerar chave"><Wand2 className="h-4 w-4" /></Button>
+                  {SECRET_KEYS.includes(f.key) && (
+                    <Button type="button" variant="outline" onClick={() => genSecret(f.key)} title="Gerar chave"><Wand2 className="h-4 w-4" /></Button>
                   )}
                 </div>
                 {f.help && <p className="text-xs text-muted-foreground">{f.help}</p>}
+                {f.key === 'TRACKING_GOOGLE_CONVERSIONS_FEED_SECRET' && (
+                  <p className="text-xs text-muted-foreground break-all">Endereço: <code>{feedUrl}</code></p>
+                )}
               </div>
             ))}
             {sec.title === 'Meta Ads' && (
