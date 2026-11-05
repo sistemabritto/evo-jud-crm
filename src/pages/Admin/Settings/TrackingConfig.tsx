@@ -72,24 +72,44 @@ const LINK_CHANNELS: Record<string, string> = {
 const isMasked = (v: unknown) => typeof v === 'string' && v.startsWith('•');
 
 function googleScript(endpoint: string, secret: string) {
-  return `// evo-jud-crm: cole em Google Ads › Ferramentas › Ações em massa › Scripts e agende "a cada hora".
-var ENDPOINT = '${endpoint}';
+  // Linhas curtas: colar de telas que quebram linha não pode partir um texto entre aspas.
+  const cut = endpoint.indexOf('/api/');
+  const url = cut > 0 ? `'${endpoint.slice(0, cut)}' +\n  '${endpoint.slice(cut)}'` : `'${endpoint}'`;
+  return `// evo-jud-crm: Google Ads > Ferramentas > Scripts.
+// Autorize, execute uma vez e agende "A cada hora".
+// Nao compartilhe: o script tem a chave.
+var ENDPOINT = ${url};
 var SECRET = '${secret || 'COLE_A_CHAVE_DO_SCRIPT'}';
+
 function main() {
+  var q = 'SELECT segments.date, campaign.id, ' +
+    'campaign.name, metrics.cost_micros, ' +
+    'metrics.impressions, metrics.clicks, ' +
+    'metrics.conversions FROM campaign ' +
+    'WHERE segments.date DURING LAST_30_DAYS';
   var rows = [];
-  var report = AdsApp.report(
-    "SELECT segments.date, campaign.id, campaign.name, metrics.cost_micros, metrics.impressions, metrics.clicks, metrics.conversions " +
-    "FROM campaign WHERE segments.date DURING LAST_30_DAYS");
-  var it = report.rows();
+  var it = AdsApp.report(q).rows();
   while (it.hasNext()) {
     var r = it.next();
-    rows.push({ date: r['segments.date'], campaign_id: r['campaign.id'], campaign_name: r['campaign.name'],
-      cost_micros: r['metrics.cost_micros'], impressions: r['metrics.impressions'], clicks: r['metrics.clicks'],
-      conversions: r['metrics.conversions'] });
+    rows.push({
+      date: r['segments.date'],
+      campaign_id: r['campaign.id'],
+      campaign_name: r['campaign.name'],
+      cost_micros: r['metrics.cost_micros'],
+      impressions: r['metrics.impressions'],
+      clicks: r['metrics.clicks'],
+      conversions: r['metrics.conversions']
+    });
   }
-  var res = UrlFetchApp.fetch(ENDPOINT, { method: 'post', contentType: 'application/json',
-    headers: { 'X-Tracking-Secret': SECRET }, payload: JSON.stringify({ rows: rows }), muteHttpExceptions: true });
-  Logger.log(res.getResponseCode() + ' ' + res.getContentText());
+  var res = UrlFetchApp.fetch(ENDPOINT, {
+    method: 'post',
+    contentType: 'application/json',
+    headers: { 'X-Tracking-Secret': SECRET },
+    payload: JSON.stringify({ rows: rows }),
+    muteHttpExceptions: true
+  });
+  Logger.log(res.getResponseCode() + ' ' +
+    res.getContentText());
 }`;
 }
 
