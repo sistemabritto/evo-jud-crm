@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Copy, Loader2, Wand2 } from 'lucide-react';
 import { adminConfigService } from '@/services/admin/adminConfigService';
 import { pipelinesService } from '@/services/pipelines';
+import { InboxesService } from '@/services/channels';
 import { trackingService, type TrackingLink, type TrackingStatus } from '@/services/tracking/trackingService';
 import { extractError } from '@/utils/apiHelpers';
 import type { AdminConfigData } from '@/types/admin/adminConfig';
@@ -27,11 +28,11 @@ const SECTIONS: { title: string; description: string; fields: Field[] }[] = [
     fields: [
       { key: 'TRACKING_META_AD_ACCOUNT_ID', label: 'ID da conta de anúncios', placeholder: '28873857435629471' },
       { key: 'TRACKING_META_ACCESS_TOKEN_SECRET', label: 'Token de acesso (usuário do sistema)', secret: true },
-      { key: 'TRACKING_META_PIXEL_ID', label: 'ID do pixel do site', help: 'Recebe os eventos de contatos vindos do site, do Instagram e de anúncios sem ctwa_clid.' },
+      { key: 'TRACKING_META_PIXEL_ID', label: 'ID do pixel (conjunto de dados)', help: 'Pixel único: site, CAPI e campanhas de WhatsApp.' },
       { key: 'TRACKING_META_CAPI_TOKEN_SECRET', label: 'Token da API de Conversões', help: 'Vazio = usa o token de acesso acima.', secret: true },
       { key: 'TRACKING_META_PAGE_ID', label: 'ID da página do Facebook' },
       { key: 'TRACKING_META_WABA_ID', label: 'ID da conta do WhatsApp Business (WABA)', help: 'Só para atribuir conversões ao anúncio de WhatsApp (ctwa_clid).' },
-      { key: 'TRACKING_META_WABA_DATASET_ID', label: 'ID do conjunto de dados da WABA', help: 'Ex.: "WhatsApp Marketing Message Event Sharing". Recebe os eventos com ctwa_clid; o token de acesso precisa ter esse conjunto atribuído.' },
+      { key: 'TRACKING_META_WABA_DATASET_ID', label: 'ID do conjunto de dados da WABA', help: 'Opcional. Vazio = tudo vai para o pixel acima (recomendado).' },
       { key: 'TRACKING_META_TEST_EVENT_CODE', label: 'Código de evento de teste', help: 'Use enquanto valida no Gerenciador de Eventos; depois apague.' },
     ],
   },
@@ -118,6 +119,7 @@ export default function TrackingConfig() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [stages, setStages] = useState<{ id: string; label: string }[]>([]);
+  const [inboxes, setInboxes] = useState<{ id: string; label: string }[]>([]);
   const [status, setStatus] = useState<TrackingStatus | null>(null);
   const [link, setLink] = useState({ channel: 'meta', area: 'INV', variant: 1, text: '' });
   const [generated, setGenerated] = useState<TrackingLink | null>(null);
@@ -135,6 +137,8 @@ export default function TrackingConfig() {
         ss.forEach((s: { id: string; name: string }) => list.push({ id: s.id, label: `${p.name} › ${s.name}` }));
       }
       setStages(list);
+      const ib = await InboxesService.list().catch(() => null);
+      setInboxes((ib?.data || []).map((i) => ({ id: String(i.id), label: `${i.name} (${String(i.channel_type || '').replace('Channel::', '')})` })));
     } catch (e) {
       toast.error(extractError(e).message || 'Erro ao carregar');
     } finally {
@@ -255,6 +259,23 @@ export default function TrackingConfig() {
           </CardContent>
         </Card>
       ))}
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Caixas de aquisição</CardTitle>
+          <p className="text-sm text-muted-foreground">Só conversas destas caixas (ex.: chip comercial) entram no funil e na atribuição de origem. Suporte fica de fora. Nenhuma marcada = todas.</p>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded border p-2 space-y-1">
+            {inboxes.map((i) => (
+              <label key={i.id} className="flex items-start gap-2 text-sm cursor-pointer">
+                <input type="checkbox" checked={selected('TRACKING_ACQUISITION_INBOX_IDS').includes(i.id)} onChange={() => toggleStage('TRACKING_ACQUISITION_INBOX_IDS', i.id)} />
+                <span>{i.label}</span>
+              </label>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

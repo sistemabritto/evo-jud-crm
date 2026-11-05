@@ -28,6 +28,7 @@ export interface FunnelData {
     roas: number | null;
   } | null;
   by_channel: Record<string, number>;
+  site_clicks?: { organic: number; from_ads: number; by_code: Record<string, number> };
 }
 
 export interface CampaignsData {

@@ -76,7 +76,8 @@ export default function TrackingDashboard() {
 
   const kpis = [
     { label: 'Investimento', value: funnel?.ads ? brl(funnel.ads.spend_cents) : '—' },
-    { label: 'Cliques', value: funnel?.ads ? num(funnel.ads.clicks) : '—' },
+    { label: 'Cliques nos anúncios', value: funnel?.ads ? num(funnel.ads.clicks) : '—' },
+    { label: 'Cliques no WhatsApp do site (orgânico)', value: num(funnel?.site_clicks?.organic ?? 0) },
     { label: 'Conversas', value: num(conversations) },
     { label: 'Custo por conversa', value: brl(funnel?.costs?.per_conversation_cents) },
     { label: 'Reuniões', value: num(meetings) },
