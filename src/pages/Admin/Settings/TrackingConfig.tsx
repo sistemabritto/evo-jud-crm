@@ -27,10 +27,11 @@ const SECTIONS: { title: string; description: string; fields: Field[] }[] = [
     fields: [
       { key: 'TRACKING_META_AD_ACCOUNT_ID', label: 'ID da conta de anúncios', placeholder: '28873857435629471' },
       { key: 'TRACKING_META_ACCESS_TOKEN_SECRET', label: 'Token de acesso (usuário do sistema)', secret: true },
-      { key: 'TRACKING_META_PIXEL_ID', label: 'ID do pixel / conjunto de dados' },
+      { key: 'TRACKING_META_PIXEL_ID', label: 'ID do pixel do site', help: 'Recebe os eventos de contatos vindos do site, do Instagram e de anúncios sem ctwa_clid.' },
       { key: 'TRACKING_META_CAPI_TOKEN_SECRET', label: 'Token da API de Conversões', help: 'Vazio = usa o token de acesso acima.', secret: true },
       { key: 'TRACKING_META_PAGE_ID', label: 'ID da página do Facebook' },
       { key: 'TRACKING_META_WABA_ID', label: 'ID da conta do WhatsApp Business (WABA)', help: 'Só para atribuir conversões ao anúncio de WhatsApp (ctwa_clid).' },
+      { key: 'TRACKING_META_WABA_DATASET_ID', label: 'ID do conjunto de dados da WABA', help: 'Ex.: "WhatsApp Marketing Message Event Sharing". Recebe os eventos com ctwa_clid; o token de acesso precisa ter esse conjunto atribuído.' },
       { key: 'TRACKING_META_TEST_EVENT_CODE', label: 'Código de evento de teste', help: 'Use enquanto valida no Gerenciador de Eventos; depois apague.' },
     ],
   },
@@ -216,7 +217,7 @@ export default function TrackingConfig() {
                   checked={String(values.TRACKING_META_CAPI_ENABLED) === 'true'}
                   onCheckedChange={(v: boolean) => set('TRACKING_META_CAPI_ENABLED', v ? 'true' : 'false')}
                 />
-                <span className="text-sm">Enviar conversões ao Meta (CAPI): conversa, agendamento, contrato e pagamento</span>
+                <span className="text-sm">Enviar conversões ao Meta (CAPI): conversa, agendamento, contrato e pagamento (só contatos vindos do Meta, do site ou do Instagram)</span>
               </div>
             )}
             {sec.title === 'Google Ads' && (
