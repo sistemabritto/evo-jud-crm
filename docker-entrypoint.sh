@@ -13,7 +13,10 @@ HTML_DIR="/usr/share/nginx/html"
 
 # Replace VITE_* variables in all JS files
 # The build uses empty strings or defaults — we replace them at runtime
-for file in $(find "$HTML_DIR" -name '*.js' -type f); do
+# Fork Cramer: pula montagens externas (ex.: site institucional em cramer-institucional, somente
+# leitura) e qualquer arquivo sem escrita; senão o sed -i derruba o container na subida.
+for file in $(find "$HTML_DIR" -path "$HTML_DIR/cramer-institucional" -prune -o -name '*.js' -type f -print); do
+  [ -w "$file" ] || continue
   # Replace each VITE_* env var if set
   [ -n "$VITE_API_URL" ] && sed -i "s|VITE_API_URL_PLACEHOLDER|${VITE_API_URL}|g" "$file"
   [ -n "$VITE_AUTH_API_URL" ] && sed -i "s|VITE_AUTH_API_URL_PLACEHOLDER|${VITE_AUTH_API_URL}|g" "$file"
