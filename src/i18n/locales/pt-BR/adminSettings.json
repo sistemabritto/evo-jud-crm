@@ -6,7 +6,8 @@
     "channels": "Canais",
     "openai": "OpenAI",
     "integrations": "Integrações",
-    "evolutionHub": "Evo Hub"
+    "evolutionHub": "Evo Hub",
+    "tracking": "Tracking"
   },
   "email": {
     "title": "Configuracao de E-mail",

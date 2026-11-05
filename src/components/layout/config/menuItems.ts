@@ -9,6 +9,7 @@ import {
   Bot,
   Layers,
   PieChart,
+  TrendingUp,
   Users2,
   Clock,
   Code,
@@ -78,6 +79,12 @@ export const getCustomerMenuItems = (t: (key: string) => string): MenuItem[] => 
     name: t('menu.customer.dashboard'),
     href: '/dashboard',
     icon: PieChart,
+  },
+  {
+    // evo-jud-crm: painel de tráfego (mesmo critério do Dashboard: dashboard.read)
+    name: t('menu.customer.trafego'),
+    href: '/trafego',
+    icon: TrendingUp,
   },
   {
     name: t('menu.customer.conversations'),

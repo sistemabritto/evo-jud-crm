@@ -95,6 +95,9 @@ const ChannelConfig = React.lazy(() => import('@/pages/Admin/Settings/ChannelCon
 const OpenAIConfig = React.lazy(() => import('@/pages/Admin/Settings/OpenAIConfig'));
 const IntegrationsConfig = React.lazy(() => import('@/pages/Admin/Settings/IntegrationsConfig'));
 const EvolutionHubConfig = React.lazy(() => import('@/pages/Admin/Settings/EvolutionHubConfig'));
+// evo-jud-crm: painel de tráfego e conexões de tracking
+const TrackingConfig = React.lazy(() => import('@/pages/Admin/Settings/TrackingConfig'));
+const TrackingDashboard = React.lazy(() => import('@/pages/Customer/Tracking/TrackingDashboard'));
 
 // Página de tutoriais
 import Tutorials from '@/pages/Customer/Tutorials';
@@ -1405,6 +1408,22 @@ const AppRouter = () => {
             }
           />
 
+          {/* evo-jud-crm: painel de tráfego (funil do anúncio ao pagamento) */}
+          <Route
+            path="/trafego"
+            element={
+              <PrivateRoute>
+                <CustomerRoute>
+                  <MainLayout>
+                    <Suspense fallback={<div className="flex items-center justify-center h-full"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+                      <TrackingDashboard />
+                    </Suspense>
+                  </MainLayout>
+                </CustomerRoute>
+              </PrivateRoute>
+            }
+          />
+
           <Route path="/conversations" element={ChatRouteElement} />
 
           <Route path="/conversations/:conversationId" element={ChatRouteElement} />
@@ -1520,6 +1539,14 @@ const AppRouter = () => {
               element={
                 <Suspense fallback={<div className="flex items-center justify-center h-full"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
                   <EvolutionHubConfig />
+                </Suspense>
+              }
+            />
+            <Route
+              path="tracking"
+              element={
+                <Suspense fallback={<div className="flex items-center justify-center h-full"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+                  <TrackingConfig />
                 </Suspense>
               }
             />
